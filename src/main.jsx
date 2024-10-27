@@ -7,6 +7,7 @@ import Login from "./pages/login";
 import Register from "./pages/register";
 import { Provider } from "react-redux";
 import { store } from "./app/store";
+import ConfirmEmail from "./pages/confirmEmail";
 
 const router = createBrowserRouter([
   {
@@ -16,6 +17,11 @@ const router = createBrowserRouter([
   {
     path: "/register",
     element: <Register />,
+  },
+
+  {
+    path: "/confirm",
+    element: <ConfirmEmail />,
   },
 ]);
 

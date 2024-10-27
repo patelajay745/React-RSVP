@@ -11,10 +11,12 @@ import {
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export default function Login() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const handleSubmit = () => {};
@@ -25,6 +27,8 @@ export default function Login() {
 
   useEffect(() => {
     console.log("Loginstatus", loginStatus.userReducer);
+
+    // if (!loginStatus.userReducer?.userData?.confirmed) navigate("/confirm");
   }, []);
 
   return (
