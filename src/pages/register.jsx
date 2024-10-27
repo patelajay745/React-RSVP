@@ -14,14 +14,35 @@ import { Link, useNavigate } from "react-router-dom";
 
 export default function Register() {
   const navigate = useNavigate();
-  const handleSubmit = () => {};
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    console.log("Submitted data", formData);
+    try {
+      const response = await fetch(
+        "https://rsvp-backend.ajayproject.com/user",
+        {
+          method: "POST",
+          mode: "cors",
+          body: JSON.stringify(formData),
+        }
+      );
+      if (!response.ok) throw new Error(`Response status: ${response.status}`);
+
+      console.log(response.body);
+      console.log(await response.json());
+    } catch (error) {
+      console.error(error.message);
+    }
+  };
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
     email: "",
     password: "",
   });
-  const handleChange = () => {};
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <Card className="w-full max-w-md">
