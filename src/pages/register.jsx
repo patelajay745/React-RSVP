@@ -11,9 +11,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { login } from "@/features/user/userSlice";
 
 export default function Register() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log("Submitted data", formData);
@@ -28,8 +31,13 @@ export default function Register() {
       );
       if (!response.ok) throw new Error(`Response status: ${response.status}`);
 
-      console.log(response.body);
-      console.log(await response.json());
+      const data = await response.json();
+
+      console.log(data.data);
+      console.log(data);
+
+      dispatch(login(data.data));
+      navigate("/");
     } catch (error) {
       console.error(error.message);
     }
