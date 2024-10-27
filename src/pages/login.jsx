@@ -11,6 +11,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 export default function Login() {
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -63,15 +64,15 @@ export default function Login() {
           </form>
         </CardContent>
         <CardFooter className="flex justify-between">
-          <a
-            href="/forgot-password"
+          <Link
+            to="/forgot-password"
             className="text-sm text-primary hover:underline"
           >
             Forgot password?
-          </a>
-          <a href="/register" className="text-sm text-primary hover:underline">
+          </Link>
+          <Link to="/register" className="text-sm text-primary hover:underline">
             Don't have an account? Sign up
-          </a>
+          </Link>
         </CardFooter>
       </Card>
     </div>
