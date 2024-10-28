@@ -1,6 +1,7 @@
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import React from "react";
+import { Link } from "react-router-dom";
 
 export default function Home() {
   return (
@@ -15,12 +16,12 @@ export default function Home() {
           <p className="mt-4 text-lg text-gray-600">
             Automate event management, from invite to check-in.
           </p>
-          <a
-            href="/register"
+          <Link
+            to="/register"
             className="mt-8 inline-block bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
           >
             Get started for free
-          </a>
+          </Link>
         </section>
 
         <section id="features" className="mt-16">
