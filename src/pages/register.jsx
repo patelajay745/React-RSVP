@@ -13,10 +13,18 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { login } from "@/features/user/userSlice";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export default function Register() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [error, setError] = useState("");
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+  });
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log("Submitted data", formData);
@@ -26,11 +34,13 @@ export default function Register() {
         {
           method: "POST",
           mode: "cors",
-          body: JSON.stringify(formData),
+          body: new URLSearchParams(formData),
         }
       );
-      if (!response.ok) throw new Error(`Response status: ${response.status}`);
-
+      if (!response.ok) {
+        const errorData = await response.json(); // Parse error response as JSON
+        throw new Error(errorData.message || "Something went wrong"); // Throw with custom message
+      }
       const data = await response.json();
 
       console.log(data.data);
@@ -40,14 +50,10 @@ export default function Register() {
       navigate("/");
     } catch (error) {
       console.error(error.message);
+      setError(error.message);
     }
   };
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    password: "",
-  });
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -110,6 +116,11 @@ export default function Register() {
                 onChange={handleChange}
               />
             </div>
+            {error && (
+              <Alert variant="destructive">
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
             <Button type="submit" className="w-full">
               Register
             </Button>
@@ -118,7 +129,7 @@ export default function Register() {
         <CardFooter className="flex justify-center">
           <p className="text-sm text-gray-600">
             Already have an account?{" "}
-            <Link className="text-primary hover:underline" to="/">
+            <Link className="text-primary hover:underline" to="/login">
               Log in
             </Link>
           </p>

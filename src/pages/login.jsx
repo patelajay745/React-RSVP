@@ -12,22 +12,58 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Link, Navigate, useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { login } from "@/features/user/userSlice";
 
 export default function Login() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
-  const handleSubmit = () => {};
-  const handleChange = () => {};
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    console.log("Submitted data", formData);
+
+    try {
+      const response = await fetch(
+        "https://rsvp-backend.ajayproject.com/login",
+        {
+          method: "POST",
+          mode: "cors",
+          body: new URLSearchParams(formData),
+          credentials: "include",
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json(); // Parse error response as JSON
+        throw new Error(errorData.message || "Something went wrong"); // Throw with custom message
+      }
+
+      const data = await response.json();
+      console.log("response data converted", data.data);
+      console.log(data);
+
+      if (data.data) {
+        dispatch(login(data.data));
+        navigate("/dashboard");
+      }
+    } catch (error) {
+      console.error("Error:", error.message);
+      setError(error.message); // Display error message in UI
+    }
+  };
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
   const loginStatus = useSelector((state) => {
-    return state;
+    return state.userReducer;
   });
 
   useEffect(() => {
-    console.log("Loginstatus", loginStatus.userReducer);
-
+    console.log("Loginstatus", loginStatus);
     // if (!loginStatus.userReducer?.userData?.confirmed) navigate("/confirm");
   }, []);
 
