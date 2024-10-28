@@ -48,7 +48,7 @@ export default function Login() {
 
       if (data.data) {
         dispatch(login(data.data));
-        navigate("/dashboard");
+        navigate("/");
       }
     } catch (error) {
       console.error("Error:", error.message);

@@ -9,11 +9,12 @@ import { Provider } from "react-redux";
 import { store } from "./app/store";
 import ConfirmEmail from "./pages/confirmEmail";
 import Dashboard from "./pages/dashboard";
+import Home from "./pages/home";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Dashboard />,
+    element: <Home />,
   },
   {
     path: "/register",
