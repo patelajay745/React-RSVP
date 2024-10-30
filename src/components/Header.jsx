@@ -3,16 +3,10 @@ import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import LogoutBtn from "./LogoutBtn";
 import Cookies from "js-cookie";
+import { useAuth } from "../context/AuthContextProvider";
 
 export default function Header() {
-  const loginStatus = useSelector((state) => {
-    console.log(state.status);
-    return state.status;
-  });
-
-  const accessToken = Cookies.get("accessToken");
-
-  console.log(accessToken);
+  const { isAuthenticated, logout } = useAuth();
 
   const navItems = [
     {
@@ -23,12 +17,12 @@ export default function Header() {
     {
       name: "Login",
       slug: "/login",
-      active: !loginStatus,
+      active: !isAuthenticated,
     },
     {
       name: "Signup",
       slug: "/register",
-      active: !loginStatus,
+      active: !isAuthenticated,
     },
   ];
 
@@ -52,7 +46,17 @@ export default function Header() {
           )}
         </nav>
 
-        {loginStatus && <LogoutBtn />}
+        {isAuthenticated && (
+          <Link
+            key="dashboard"
+            to="/dashboard"
+            className="text-gray-700 hover:text-gray-900"
+          >
+            Dashboard
+          </Link>
+        )}
+
+        {isAuthenticated && <LogoutBtn />}
       </div>
     </header>
   );

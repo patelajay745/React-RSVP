@@ -5,17 +5,13 @@ import App from "./App.jsx";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Login from "./pages/login";
 import Register from "./pages/register";
-import { Provider } from "react-redux";
-import { store } from "./app/store";
 import ConfirmEmail from "./pages/confirmEmail";
-import Dashboard from "./pages/dashboard";
-import Home from "./pages/home";
 import AuthContextProvider from "./context/AuthContextProvider";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Home />,
+    element: <App />,
   },
   {
     path: "/register",
@@ -36,9 +32,7 @@ const router = createBrowserRouter([
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <AuthContextProvider>
-      <RouterProvider router={router}>
-        <Home />
-      </RouterProvider>
+      <RouterProvider router={router}></RouterProvider>
     </AuthContextProvider>
   </StrictMode>
 );
