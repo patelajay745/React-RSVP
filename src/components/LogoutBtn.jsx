@@ -1,11 +1,22 @@
+import { useAuth } from "@/context/AuthContextProvider";
 import React from "react";
-import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 function LogoutBtn() {
-  const dispatch = useDispatch();
-  const logoutHandler = () => {
-    console.log("Button clicked");
-    // dispatch(logOut());
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+  const logoutHandler = async () => {
+    
+    const result = await logout();
+    console.log("Logout Result:", result); // Logs result object
+
+    if (result.success) {
+      navigate("/");
+    } else {
+      console.log("Logout Error:", result.error); // Logs error code
+      console.log("Error Message:", result.message); // Logs error message
+      // You could also show an error message to the user here
+    }
   };
   return (
     <button

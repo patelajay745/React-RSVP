@@ -16,19 +16,17 @@ const AuthContextProvider = ({ children }) => {
     const shouldCheck =
       force || !lastChecked || Date.now() - lastChecked > 30 * 60 * 1000; //every 30 minutes
 
-    console.log(shouldCheck);
+    console.log("shouldCheck", shouldCheck);
 
     if (!shouldCheck) return;
 
     try {
       console.log("called verify api");
       const response = await fetch(
-        "https://rsvp-backend.ajayproject.com/login",
+        "https://rsvp-backend.ajayproject.com/verify",
         {
-          method: "POST",
+          method: "GET",
           mode: "cors",
-          // change this api
-          body: new URLSearchParams(formData),
           credentials: "include",
         }
       );
@@ -55,38 +53,72 @@ const AuthContextProvider = ({ children }) => {
     checkAuth();
   }, []);
 
-  // const login = async (credentails) => {
-  //   try {
-  //     const response = await fetch(
-  //       "https://rsvp-backend.ajayproject.com/login",
-  //       {
-  //         method: "POST",
-  //         mode: "cors",
-  //         body: new URLSearchParams(credentails),
-  //         credentials: "include",
-  //       }
-  //     );
+  const login = async (credentails) => {
+    console.log("recived data", new URLSearchParams(credentails));
+    try {
+      const response = await fetch(
+        "https://rsvp-backend.ajayproject.com/login",
+        {
+          method: "POST",
+          mode: "cors",
+          body: new URLSearchParams(credentails),
+          credentials: "include",
+        }
+      );
 
-  //     if (response.ok) {
-  //       setIsAuthenticated(true);
-  //       return true;
-  //     }
-  //     return false;
-  //   } catch (error) {
-  //     console.error("Login failed:", error);
-  //     return false;
-  //   }
-  // };
+      const data = await response.json();
+
+      if (response.ok) {
+        setIsAuthenticated(true);
+        const currentTime = Date.now();
+        setLastChecked(currentTime);
+
+        // Update localStorage
+        localStorage.setItem("authState", JSON.stringify(response.ok));
+        localStorage.setItem("lastChecked", currentTime);
+        return { success: true };
+      }
+      return {
+        success: false,
+        message: data,
+      };
+    } catch (error) {
+      console.error("Login failed:", error);
+      return false;
+    }
+  };
 
   const logout = async () => {
     try {
-      await fetch("https://rsvp-backend.ajayproject.com/logout", {
-        method: "POST",
-        credentials: "include",
-      });
-      setIsAuthenticated(false);
+      const response = await fetch(
+        "https://rsvp-backend.ajayproject.com/logout",
+        {
+          method: "POST",
+          mode: "cors",
+          credentials: "include",
+        }
+      );
+
+      const data = await response.json();
+      console.log("Logout Response:", data);
+
+      if (response.ok) {
+        setIsAuthenticated(false);
+        return { success: true };
+      }
+
+      return {
+        success: false,
+        error: data.data.code,
+        message: data.message,
+      };
     } catch (error) {
       console.error("Logout failed:", error);
+      return {
+        success: false,
+        error: "NETWORK_ERROR",
+        message: error.message,
+      };
     }
   };
 
@@ -95,7 +127,7 @@ const AuthContextProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated, isLoading, login, logout, verifyAuth }}
+      value={{ isAuthenticated, isLoading, logout, verifyAuth, login }} //add login ,login
     >
       {children}
     </AuthContext.Provider>
@@ -105,7 +137,6 @@ const AuthContextProvider = ({ children }) => {
 export const useAuth = () => {
   const context = useContext(AuthContext);
 
-  console.log(context);
   if (context === undefined)
     throw new Error("useAuth must be used within an AuthProvider");
 

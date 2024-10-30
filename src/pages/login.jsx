@@ -12,56 +12,34 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Link, Navigate, useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { login } from "@/features/user/userSlice";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import useFetch from "@/hooks/useFetch";
+import { useForm } from "react-hook-form";
+import { useAuth } from "@/context/AuthContextProvider";
 
 export default function Login() {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const [formData, setFormData] = useState({ email: "", password: "" });
+  const { login } = useAuth();
+
   const [error, setError] = useState("");
 
-  const {
-    data,
-    error: fetchError,
-    fetchData,
-  } = useFetch("https://rsvp-backend.ajayproject.com/login", {
-    method: "POST",
-    mode: "cors",
-    body: new URLSearchParams(formData),
-    credentials: "include",
-  });
+  const onSubmit = async (data) => {
+    const result = await login(data);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-    await fetchData();
-  };
-
-  useEffect(() => {
-    if (data) {
-      console.log(data);
-      dispatch(login(data.data));
-      navigate("/");
-      // dispatch(login(data));
-      // navigate("/");
+    if (!result.success) {
+      setError(result.message.message);
+      return;
     }
-    if (fetchError) {
-      console.log(fetchError);
-      setError(fetchError);
-    }
-  }, [data, fetchError]);
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    navigate("/dashboard");
   };
-  const loginStatus = useSelector((state) => {
-    return state.userReducer;
-  });
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
@@ -75,17 +53,16 @@ export default function Login() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
                   id="email"
                   name="email"
                   type="email"
+                  {...register("email")}
                   required
                   placeholder="john.doe@example.com"
-                  value={formData.email}
-                  onChange={handleChange}
                 />
               </div>
               <div className="space-y-2">
@@ -94,10 +71,9 @@ export default function Login() {
                   id="password"
                   name="password"
                   type="password"
+                  {...register("password", { required: true })}
                   required
                   placeholder="••••••••"
-                  value={formData.password}
-                  onChange={handleChange}
                 />
               </div>
               {error && (
@@ -105,7 +81,7 @@ export default function Login() {
                   <AlertDescription>{error}</AlertDescription>
                 </Alert>
               )}
-              <Button onClick={fetchData} type="submit" className="w-full">
+              <Button type="submit" className="w-full">
                 Login
               </Button>
             </form>

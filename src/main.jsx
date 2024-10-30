@@ -7,6 +7,7 @@ import Login from "./pages/login";
 import Register from "./pages/register";
 import ConfirmEmail from "./pages/confirmEmail";
 import AuthContextProvider from "./context/AuthContextProvider";
+import Dashboard from "./pages/dashboard";
 
 const router = createBrowserRouter([
   {
@@ -24,8 +25,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/login",
-
     element: <Login />,
+  },
+  {
+    path: "/dashboard",
+    element: <Dashboard />,
   },
 ]);
 
