@@ -45,6 +45,8 @@ export default function Login() {
   useEffect(() => {
     if (data) {
       console.log(data);
+      dispatch(login(data.data));
+      navigate("/");
       // dispatch(login(data));
       // navigate("/");
     }

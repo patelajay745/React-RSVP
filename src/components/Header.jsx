@@ -1,11 +1,18 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
+import LogoutBtn from "./LogoutBtn";
+import Cookies from "js-cookie";
 
 export default function Header() {
   const loginStatus = useSelector((state) => {
+    console.log(state.status);
     return state.status;
   });
+
+  const accessToken = Cookies.get("accessToken");
+
+  console.log(accessToken);
 
   const navItems = [
     {
@@ -44,6 +51,8 @@ export default function Header() {
             ) : null
           )}
         </nav>
+
+        {loginStatus && <LogoutBtn />}
       </div>
     </header>
   );

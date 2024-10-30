@@ -10,6 +10,7 @@ import { store } from "./app/store";
 import ConfirmEmail from "./pages/confirmEmail";
 import Dashboard from "./pages/dashboard";
 import Home from "./pages/home";
+import AuthContextProvider from "./context/AuthContextProvider";
 
 const router = createBrowserRouter([
   {
@@ -34,10 +35,10 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <Provider store={store}>
+    <AuthContextProvider>
       <RouterProvider router={router}>
-        <App />
+        <Home />
       </RouterProvider>
-    </Provider>
+    </AuthContextProvider>
   </StrictMode>
 );
