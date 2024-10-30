@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import AuthContext from "./AuthContext";
 import { useApi } from "@/hooks/useApi";
+import { useNavigate } from "react-router-dom";
 
 const AuthContextProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
@@ -18,7 +19,7 @@ const AuthContextProvider = ({ children }) => {
     const shouldCheck =
       force || !lastChecked || Date.now() - lastChecked > 30 * 60 * 1000; //every 30 minutes
 
-    console.log("shouldCheck", shouldCheck);
+    // console.log("shouldCheck", shouldCheck);
 
     if (!shouldCheck) return;
 
@@ -26,13 +27,15 @@ const AuthContextProvider = ({ children }) => {
       console.log("called verify api");
       const result = await api.verifyAuth();
 
-      setIsAuthenticated(result.success);
-      const currentTime = Date.now();
-      setLastChecked(currentTime);
+      if (result.success) {
+        setIsAuthenticated(result.success);
+        const currentTime = Date.now();
+        setLastChecked(currentTime);
 
-      // Update localStorage
-      localStorage.setItem("authState", JSON.stringify(result.success));
-      localStorage.setItem("lastChecked", currentTime);
+        // Update localStorage
+        localStorage.setItem("authState", JSON.stringify(result.success));
+        localStorage.setItem("lastChecked", currentTime);
+      }
     } catch (error) {
       console.log("Auth check failed", error);
     } finally {

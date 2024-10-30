@@ -49,7 +49,7 @@ export const useApi = () => {
       const response = await apiCall();
       return { success: true, data: response };
     } catch (error) {
-      console.error("API Error:", error);
+      // console.error("API Error:", error);
       return error;
     }
   };
