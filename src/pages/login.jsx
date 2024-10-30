@@ -29,16 +29,22 @@ export default function Login() {
   const { login } = useAuth();
 
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const onSubmit = async (data) => {
-    const result = await login(data);
+    setIsLoading(true);
+    try {
+      const result = await login(data);
 
-    if (!result.success) {
-      setError(result.message.message);
-      return;
+      if (!result.success) {
+        setError(result.message);
+        return;
+      }
+
+      navigate("/dashboard");
+    } finally {
+      setIsLoading(false);
     }
-
-    navigate("/dashboard");
   };
 
   return (
@@ -81,8 +87,28 @@ export default function Login() {
                   <AlertDescription>{error}</AlertDescription>
                 </Alert>
               )}
-              <Button type="submit" className="w-full">
-                Login
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? (
+                  <>
+                    <svg
+                      className="mr-2 h-4 w-4 animate-spin"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+                    </svg>
+                    Logging in...
+                  </>
+                ) : (
+                  "Login"
+                )}
               </Button>
             </form>
           </CardContent>

@@ -1,5 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import AuthContext from "./AuthContext";
+import { useApi } from "@/hooks/useApi";
 
 const AuthContextProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
@@ -9,6 +10,7 @@ const AuthContextProvider = ({ children }) => {
   const [lastChecked, setLastChecked] = useState(() => {
     return localStorage.getItem("lastChecked") || 0;
   });
+  const api = useApi();
 
   const [isLoading, setIsLoading] = useState(true);
 
@@ -22,25 +24,14 @@ const AuthContextProvider = ({ children }) => {
 
     try {
       console.log("called verify api");
-      const response = await fetch(
-        "https://rsvp-backend.ajayproject.com/verify",
-        {
-          method: "GET",
-          mode: "cors",
-          credentials: "include",
-        }
-      );
+      const result = await api.verifyAuth();
 
-      const newState = response.ok;
-
-      console.log(newState);
-
-      setIsAuthenticated(newState);
+      setIsAuthenticated(result.success);
       const currentTime = Date.now();
       setLastChecked(currentTime);
 
       // Update localStorage
-      localStorage.setItem("authState", JSON.stringify(newState));
+      localStorage.setItem("authState", JSON.stringify(result.success));
       localStorage.setItem("lastChecked", currentTime);
     } catch (error) {
       console.log("Auth check failed", error);
@@ -49,78 +40,46 @@ const AuthContextProvider = ({ children }) => {
     }
   };
 
-  useEffect(() => {
-    checkAuth();
-  }, []);
-
-  const login = async (credentails) => {
-    console.log("recived data", new URLSearchParams(credentails));
+  const login = async (credentials) => {
     try {
-      const response = await fetch(
-        "https://rsvp-backend.ajayproject.com/login",
-        {
-          method: "POST",
-          mode: "cors",
-          body: new URLSearchParams(credentails),
-          credentials: "include",
-        }
-      );
+      const result = await api.login(credentials);
 
-      const data = await response.json();
-
-      if (response.ok) {
+      if (result.success) {
         setIsAuthenticated(true);
         const currentTime = Date.now();
         setLastChecked(currentTime);
-
         // Update localStorage
-        localStorage.setItem("authState", JSON.stringify(response.ok));
+        localStorage.setItem("authState", JSON.stringify(true));
         localStorage.setItem("lastChecked", currentTime);
-        return { success: true };
       }
-      return {
-        success: false,
-        message: data,
-      };
+
+      return result;
     } catch (error) {
       console.error("Login failed:", error);
-      return false;
+      return error;
     }
   };
 
   const logout = async () => {
     try {
-      const response = await fetch(
-        "https://rsvp-backend.ajayproject.com/logout",
-        {
-          method: "POST",
-          mode: "cors",
-          credentials: "include",
-        }
-      );
+      const result = await api.logout();
 
-      const data = await response.json();
-      console.log("Logout Response:", data);
-
-      if (response.ok) {
+      if (result.success) {
         setIsAuthenticated(false);
-        return { success: true };
+        localStorage.removeItem("authState");
+        localStorage.removeItem("lastChecked");
       }
 
-      return {
-        success: false,
-        error: data.data.code,
-        message: data.message,
-      };
+      return result;
     } catch (error) {
-      console.error("Logout failed:", error);
-      return {
-        success: false,
-        error: "NETWORK_ERROR",
-        message: error.message,
-      };
+      console.error("Logout error:", error);
+      return error;
     }
   };
+
+  useEffect(() => {
+    checkAuth();
+  }, []);
 
   // Expose force check method
   const verifyAuth = () => checkAuth(true);
