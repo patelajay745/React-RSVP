@@ -4,7 +4,7 @@ import "./index.css";
 import App from "./App.jsx";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Login from "./pages/login";
-import Register from "./pages/register";
+import Register from "./pages/signup";
 import ConfirmEmail from "./pages/confirmEmail";
 import AuthContextProvider from "./context/AuthContextProvider";
 import Dashboard from "./pages/dashboard";

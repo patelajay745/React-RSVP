@@ -9,25 +9,37 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { useForm } from "react-hook-form";
+import { useAuth } from "@/context/AuthContextProvider";
 
 export default function Register() {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
   const [error, setError] = useState("");
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    password: "",
-  });
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    console.log("Submitted data", formData);
+  const { isAuthenticated } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (isAuthenticated) navigate("/dashboard");
+  }, []);
+
+  const onSubmit = async (data) => {
+    console.log(data);
+
+    setIsLoading(true);
+
+
+    
+
     try {
       const response = await fetch(
         "https://rsvp-backend.ajayproject.com/user",
@@ -46,7 +58,6 @@ export default function Register() {
       console.log(data.data);
       console.log(data);
 
-      dispatch(login(data.data));
       navigate("/");
     } catch (error) {
       console.error(error.message);
@@ -54,9 +65,6 @@ export default function Register() {
     }
   };
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
       <Header />
@@ -69,7 +77,7 @@ export default function Register() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="firstName">First Name</Label>
                 <Input
@@ -78,8 +86,7 @@ export default function Register() {
                   type="text"
                   required
                   placeholder="John"
-                  value={formData.firstName}
-                  onChange={handleChange}
+                  {...register("firstName")}
                 />
               </div>
               <div className="space-y-2">
@@ -90,8 +97,7 @@ export default function Register() {
                   type="text"
                   required
                   placeholder="Doe"
-                  value={formData.lastName}
-                  onChange={handleChange}
+                  {...register("lastName")}
                 />
               </div>
               <div className="space-y-2">
@@ -102,8 +108,7 @@ export default function Register() {
                   type="email"
                   required
                   placeholder="john.doe@example.com"
-                  value={formData.email}
-                  onChange={handleChange}
+                  {...register("email")}
                 />
               </div>
               <div className="space-y-2">
@@ -114,8 +119,7 @@ export default function Register() {
                   type="password"
                   required
                   placeholder="••••••••"
-                  value={formData.password}
-                  onChange={handleChange}
+                  {...register("password")}
                 />
               </div>
               {error && (

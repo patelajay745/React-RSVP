@@ -17,7 +17,7 @@ const AuthContextProvider = ({ children }) => {
 
   const checkAuth = async (force = false) => {
     const shouldCheck =
-      force || !lastChecked || Date.now() - lastChecked > 30 * 60 * 1000; //every 30 minutes
+      force || !lastChecked || Date.now() - lastChecked > 60 * 60 * 1000; //every 30 minutes
 
     // console.log("shouldCheck", shouldCheck);
 
