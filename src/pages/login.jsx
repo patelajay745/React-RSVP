@@ -26,15 +26,21 @@ export default function Login() {
     formState: { errors },
   } = useForm();
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { isAuthenticated, login } = useAuth();
 
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (isAuthenticated) navigate("/dashboard");
+  }, []);
 
   const onSubmit = async (data) => {
     setIsLoading(true);
     try {
       const result = await login(data);
+
+      console.log(result);
 
       if (!result.success) {
         setError(result.message);

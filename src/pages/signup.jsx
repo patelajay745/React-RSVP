@@ -25,7 +25,7 @@ export default function Register() {
   } = useForm();
   const navigate = useNavigate();
   const [error, setError] = useState("");
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, signup } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -33,35 +33,26 @@ export default function Register() {
   }, []);
 
   const onSubmit = async (data) => {
-    console.log(data);
-
+    setError("");
     setIsLoading(true);
 
-
-    
-
     try {
-      const response = await fetch(
-        "https://rsvp-backend.ajayproject.com/user",
-        {
-          method: "POST",
-          mode: "cors",
-          body: new URLSearchParams(formData),
-        }
-      );
-      if (!response.ok) {
-        const errorData = await response.json(); // Parse error response as JSON
-        throw new Error(errorData.message || "Something went wrong"); // Throw with custom message
+      const result = await signup(data);
+      console.log("result", result);
+
+      if (result.success) {
+        navigate("/login");
       }
-      const data = await response.json();
 
-      console.log(data.data);
-      console.log(data);
-
-      navigate("/");
+      if (!result.success) {
+        setError(result.message);
+        return;
+      }
     } catch (error) {
-      console.error(error.message);
-      setError(error.message);
+      console.log(error);
+      setError("there is error");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -127,8 +118,34 @@ export default function Register() {
                   <AlertDescription>{error}</AlertDescription>
                 </Alert>
               )}
-              <Button type="submit" className="w-full">
-                Register
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? (
+                  <>
+                    <svg
+                      className="animate-spin -ml-1 mr-2 h-4 w-4"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      />
+                    </svg>
+                    Creating account...
+                  </>
+                ) : (
+                  "Register"
+                )}
               </Button>
             </form>
           </CardContent>

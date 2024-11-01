@@ -1,7 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import AuthContext from "./AuthContext";
 import { useApi } from "@/hooks/useApi";
-import { useNavigate } from "react-router-dom";
 
 const AuthContextProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
@@ -47,18 +46,31 @@ const AuthContextProvider = ({ children }) => {
     try {
       const result = await api.login(credentials);
 
+      console.log("login return data", result);
+
       if (result.success) {
         setIsAuthenticated(true);
         const currentTime = Date.now();
         setLastChecked(currentTime);
         // Update localStorage
         localStorage.setItem("authState", JSON.stringify(true));
+        localStorage.setItem("userData", JSON.stringify(result.data.data.user));
         localStorage.setItem("lastChecked", currentTime);
       }
 
       return result;
     } catch (error) {
       console.error("Login failed:", error);
+      return error;
+    }
+  };
+
+  const signup = async (userData) => {
+    try {
+      const result = await api.signup(userData);
+      return result;
+    } catch (error) {
+      console.error("Signup failed:", error);
       return error;
     }
   };
@@ -89,7 +101,7 @@ const AuthContextProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated, isLoading, logout, verifyAuth, login }} //add login ,login
+      value={{ isAuthenticated, isLoading, logout, verifyAuth, login, signup }} //add login ,login
     >
       {children}
     </AuthContext.Provider>

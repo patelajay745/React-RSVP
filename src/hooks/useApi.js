@@ -5,17 +5,6 @@ const api = axios.create({
   withCredentials: true, // Needed for cookies
 });
 
-// Transform request data to URLSearchParams for POST requests
-api.interceptors.request.use((config) => {
-  if (config.method === "post" && config.data) {
-    // Convert data to URLSearchParams if it isn't already
-    if (!(config.data instanceof URLSearchParams)) {
-      config.data = new URLSearchParams(config.data);
-    }
-  }
-  return config;
-});
-
 api.interceptors.response.use(
   (response) => response.data,
   (error) => {
@@ -59,6 +48,9 @@ export const useApi = () => {
 
     login: (credentials) =>
       handleApiCall(() => api.post("/login", new URLSearchParams(credentials))),
+
+    signup: (data) =>
+      handleApiCall(() => api.post("/user", new URLSearchParams(data))),
 
     logout: () => handleApiCall(() => api.post("/logout")),
 
