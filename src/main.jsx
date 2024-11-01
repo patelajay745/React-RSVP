@@ -8,6 +8,8 @@ import Register from "./pages/signup";
 import ConfirmEmail from "./pages/confirmEmail";
 import AuthContextProvider from "./context/AuthContextProvider";
 import Dashboard from "./pages/dashboard";
+import DashboardComponent from "./components/Dashboard";
+import CreateEvent from "./components/CreateEvent";
 
 const router = createBrowserRouter([
   {
@@ -30,6 +32,16 @@ const router = createBrowserRouter([
   {
     path: "/dashboard",
     element: <Dashboard />,
+    children: [
+      {
+        index: true,
+        element: <DashboardComponent />,
+      },
+      {
+        path: "create-event",
+        element: <CreateEvent />,
+      },
+    ],
   },
 ]);
 

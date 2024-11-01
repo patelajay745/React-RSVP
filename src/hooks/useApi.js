@@ -6,7 +6,9 @@ const api = axios.create({
 });
 
 api.interceptors.response.use(
-  (response) => response.data,
+  (response) => {
+    return response.data;
+  },
   (error) => {
     if (error.response) {
       return Promise.reject({
@@ -53,6 +55,8 @@ export const useApi = () => {
       handleApiCall(() => api.post("/user", new URLSearchParams(data))),
 
     logout: () => handleApiCall(() => api.post("/logout")),
+
+    getAllEvents: () => handleApiCall(() => api.get("/event")),
 
     // Add more API calls as needed
   };
